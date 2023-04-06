@@ -20,19 +20,20 @@ type RenderParams<T> = {
 };
 type FieldProps<T> = {
   name: string;
-  render: (params: RenderParams<T>) => ReactElement;
+  children: (params: RenderParams<T>) => ReactElement;
 };
-export function Field<T = any>({ name, render }: FieldProps<T>) {
+export function Field<T = any>({ name, children }: FieldProps<T>) {
   const {
     values,
-    meta: { toucheds, errors },
+    toucheds,
+    errors,
     setFieldError,
     setFieldTouched,
     setFieldValue,
     validateForm,
   } = useContext(FormContext);
 
-  return render({
+  return children({
     form: { setFieldError, setFieldTouched, setFieldValue },
     meta: { name, touched: toucheds[name], error: errors[name] },
     value: values[name],
