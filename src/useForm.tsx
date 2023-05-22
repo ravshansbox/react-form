@@ -12,13 +12,13 @@ import {
   useState,
 } from 'react';
 
-const formContext = createContext({});
+const _FormContext = createContext({});
 
 type Toucheds<T> = Partial<Record<keyof T, boolean>>;
 
 type Errors<T> = Partial<Record<keyof T, string>>;
 
-type FormContext<T> = {
+type FormContextValue<T> = {
   toucheds: Toucheds<T>;
   errors: Errors<T>;
   values: T;
@@ -51,6 +51,8 @@ export function useForm<T extends Record<string, string>>({
   initialValues,
   validate,
 }: UseFormOptions<T>) {
+  const FormContext = _FormContext as Context<FormContextValue<T>>;
+
   function Form({ children, ...props }: FormHTMLAttributes<HTMLFormElement>) {
     const [toucheds, setToucheds] = useState<Toucheds<T>>({});
     const [errors, setErrors] = useState<Errors<T>>({});
@@ -62,19 +64,19 @@ export function useForm<T extends Record<string, string>>({
     };
 
     return (
-      <formContext.Provider
+      <_FormContext.Provider
         value={{ toucheds, errors, values, setToucheds, setErrors, setValues }}
       >
         <form onSubmit={onSubmit} {...props}>
           {children}
         </form>
-      </formContext.Provider>
+      </_FormContext.Provider>
     );
   }
 
   function Field({ children, name }: FieldProps<T>) {
     const { toucheds, errors, values, setToucheds, setErrors, setValues } =
-      useContext(formContext as Context<FormContext<T>>);
+      useContext(FormContext);
 
     const touched = toucheds[name] ?? false;
     const error = errors[name] ?? '';
@@ -96,5 +98,5 @@ export function useForm<T extends Record<string, string>>({
     return children({ name, touched, error, value, onBlur, onChange });
   }
 
-  return { Field, Form, formContext };
+  return { Field, Form, FormContext };
 }
