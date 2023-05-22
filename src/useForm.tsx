@@ -95,5 +95,5 @@ export function useForm<T extends Record<string, string>>({
     return children({ name, touched, error, value, onBlur, onChange });
   }
 
-  return { Form, Field };
+  return { Field, Form, FormContext };
 }
